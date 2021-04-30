@@ -153,3 +153,32 @@ Plot3 <- ggplot(data = caro, aes(x= E, y= N)) +
   scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
   theme_bw() +
   theme(panel.border = element_blank())
+
+# Task 4
+
+library(zoo)
+example <- rnorm(10)
+example
+rollmean(example,k = 3,fill = NA,align = "left")
+rollmean(example,k = 4,fill = NA, align = "left")
+
+carowindow <- caro
+carowindow$k2 <- rollmean(carowindow$speed, k=2, fill = NA, align = "left")
+carowindow$k3 <- rollmean(carowindow$speed, k=3, fill = NA, align = "left")
+carowindow$k4 <- rollmean(carowindow$speed, k=4, fill = NA, align = "left")
+carowindow$k6 <- rollmean(carowindow$speed, k=6, fill = NA, align = "left")
+carowindow$k10 <- rollmean(carowindow$speed, k=10, fill = NA, align = "left")
+
+
+windowfunc_plot <- ggplot(carowindow, aes(x=DatetimeUTC, y=speed)) +
+  geom_line(color = "black", size = 0.75) +
+  geom_line(data = carowindow, aes(y=k2, color = "k2"), size =0.6)+
+  geom_line(data = carowindow, aes(y=k3, color = "k3"), size =0.6)+
+  geom_line(data = carowindow, aes(y=k4, color = "k4"), size =0.6)+
+  geom_line(data = carowindow, aes(y=k6, color = "k6"), size =0.6)+
+  geom_line(data = carowindow, aes(y=k10, color = "k10"), size =0.6)+
+  theme_light() +
+  labs(x = "Time", y= "Speed", color = "Legend") +
+  scale_color_manual(values = c("k2" = "firebrick3", "k3" = "dodgerblue3", "k4" = "darkorchid3", "k6" = "darkolivegreen3", "k10"= "goldenrod3"))
+
+
