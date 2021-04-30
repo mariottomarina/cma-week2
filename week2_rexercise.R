@@ -42,5 +42,14 @@ wildschwein_BE %>%
   group_by(TierID) %>%
   summarise(mean(timelag))
 
+# Task 2
+wildschwein_BE <- wildschwein_BE %>%
+  group_by(TierID) %>%
+  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
 
-  
+# calculating speed  distance devided by zeitinterval
+wildschwein_BE <- wildschwein_BE %>% 
+  group_by(TierID) %>%
+  mutate(speed = steplength/timelag)
+
+ 
