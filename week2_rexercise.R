@@ -52,4 +52,104 @@ wildschwein_BE <- wildschwein_BE %>%
   group_by(TierID) %>%
   mutate(speed = steplength/timelag)
 
- 
+## Unit of Speed??
+
+# Task 3
+caro <- read_delim("caro60.csv",",") # adjust path
+
+caro <- st_as_sf(caro, coords = c("E", "N"), crs = 2056, remove = FALSE)
+
+caro_3 <- caro[seq(1,nrow(caro),by=3),]
+caro_6 <- caro[seq(1,nrow(caro),by=6),]
+caro_9 <- caro[seq(1,nrow(caro),by=9),]
+nrow(caro)
+nrow(caro_3)
+nrow(caro_6)
+nrow(caro_9)
+
+
+#calculating timelag, steplength and speed for Caro
+caro <-caro %>%
+  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+
+caro <- caro %>%
+  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+
+caro <- caro %>%
+  mutate(speed = steplength/timelag)
+
+#calculating timelag, steplength and speed for Caro_3
+caro_3 <-caro_3 %>%
+  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+
+caro_3 <- caro_3 %>%
+  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+
+caro_3 <- caro_3 %>%
+  mutate(speed = steplength/timelag)
+
+#calculating timelag, steplength and speed for Caro_6
+caro_6 <-caro_6 %>%
+  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+
+caro_6 <- caro_6 %>%
+  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+
+caro_6 <- caro_6 %>%
+  mutate(speed = steplength/timelag)
+
+#calculating timelag, steplength and speed for Caro_9
+caro_9 <-caro_9 %>%
+  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+
+caro_9 <- caro_9 %>%
+  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+
+caro_9 <- caro_9 %>%
+  mutate(speed = steplength/timelag)
+
+# Lineplot with different speeds
+Lineplot <- ggplot() +
+  geom_line(data = caro, aes(x= DatetimeUTC, y = speed), color = "orange", size = 0.6) +
+  geom_line(data = caro_3, aes(x= DatetimeUTC, y = speed), color = "darkgreen", size =0.6) +
+  geom_line(data = caro_6, aes(x= DatetimeUTC, y = speed), color = "blue", size =0.6)  +
+  geom_line(data = caro_9, aes(x= DatetimeUTC, y = speed), color = "violet", size =0.6) +
+  ylab("Speed (m/s)") +
+  xlab("Time") +
+  theme_bw() +
+  theme(axis.title = element_text(vjust = 2, size = 15),
+        panel.border = element_blank()) 
+
+# The higher the sampling rate the more fluctuations there are in the data. The lower the sampling rate the more information is "lost" and extrema don't look as extreme.
+
+# how do i add a legend?
+
+Plot1 <- ggplot(data = caro, aes(x= E, y= N)) +
+  geom_sf(color = "orange") +
+  geom_path(color = "orange") + 
+  geom_sf(data = caro_3, color = "blue") +
+  geom_path(data = caro_3, color = "blue") +
+  coord_sf(datum = st_crs(2056)) +
+  scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
+  theme_bw() +
+  theme(panel.border = element_blank())
+
+Plot2 <- ggplot(data = caro, aes(x= E, y= N)) +
+  geom_sf(color = "orange") +
+  geom_path(color = "orange") + 
+  geom_sf(data = caro_6, color = "blue") +
+  geom_path(data = caro_6, color = "blue") +
+  coord_sf(datum = st_crs(2056)) +
+  scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
+  theme_bw() +
+  theme(panel.border = element_blank())
+
+Plot3 <- ggplot(data = caro, aes(x= E, y= N)) +
+  geom_sf(color = "orange") +
+  geom_path(color = "orange") + 
+  geom_sf(data = caro_9, color = "blue") +
+  geom_path(data = caro_9, color = "blue") +
+  coord_sf(datum = st_crs(2056)) +
+  scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
+  theme_bw() +
+  theme(panel.border = element_blank())
