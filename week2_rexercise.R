@@ -80,79 +80,111 @@ caro <- caro %>%
 
 #calculating timelag, steplength and speed for Caro_3
 caro_3 <-caro_3 %>%
-  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+  mutate(timelag3 = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
 
 caro_3 <- caro_3 %>%
-  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+  mutate(steplength3 = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
 
 caro_3 <- caro_3 %>%
-  mutate(speed = steplength/timelag)
+  mutate(speed3 = steplength3/timelag3)
 
 #calculating timelag, steplength and speed for Caro_6
 caro_6 <-caro_6 %>%
-  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+  mutate(timelag6 = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
 
 caro_6 <- caro_6 %>%
-  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+  mutate(steplength6 = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
 
 caro_6 <- caro_6 %>%
-  mutate(speed = steplength/timelag)
+  mutate(speed6 = steplength6/timelag6)
 
 #calculating timelag, steplength and speed for Caro_9
 caro_9 <-caro_9 %>%
-  mutate(timelag = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
+  mutate(timelag9 = as.integer(difftime(lead(DatetimeUTC),DatetimeUTC, units = "secs")))
 
 caro_9 <- caro_9 %>%
-  mutate(steplength = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
+  mutate(steplength9 = sqrt((E- lead(E,1))^2 + (N -lead(N,1))^2))
 
 caro_9 <- caro_9 %>%
-  mutate(speed = steplength/timelag)
+  mutate(speed9 = steplength9/timelag9)
 
 # Lineplot with different speeds
 Lineplot <- ggplot() +
-  geom_line(data = caro, aes(x= DatetimeUTC, y = speed), color = "orange", size = 0.6) +
-  geom_line(data = caro_3, aes(x= DatetimeUTC, y = speed), color = "darkgreen", size =0.6) +
-  geom_line(data = caro_6, aes(x= DatetimeUTC, y = speed), color = "blue", size =0.6)  +
-  geom_line(data = caro_9, aes(x= DatetimeUTC, y = speed), color = "violet", size =0.6) +
-  ylab("Speed (m/s)") +
-  xlab("Time") +
-  theme_bw() +
+  geom_line(data = caro, aes(x= DatetimeUTC, y = speed, color = "speed"), size = 0.8) +
+  geom_line(data = caro_3, aes(x= DatetimeUTC, y = speed3, color = "speed3"), size =0.8) +
+  geom_line(data = caro_6, aes(x= DatetimeUTC, y = speed6, color = "speed6"), size =0.8)  +
+  geom_line(data = caro_9, aes(x= DatetimeUTC, y = speed9, color = "speed9"), size =0.8) +
+  theme_light() +
+  labs(x = "Time", y= "Speed", color = "Colour", title = "Comparing derived speed at different sampling intervals") +
+  scale_color_manual(values = c("speed" = "black", "speed3" = "orange", "speed6" = "green", "speed9" = "violet"), labels = c("1 minute", "3 minutes", "6 minutes", "9 minutes")) +
   theme(axis.title = element_text(vjust = 2, size = 15),
-        panel.border = element_blank()) 
+        panel.border = element_blank(), 
+        title = element_text(vjust = 2, size =15)) 
+
 
 # The higher the sampling rate the more fluctuations there are in the data. The lower the sampling rate the more information is "lost" and extrema don't look as extreme.
 
 # how do i add a legend?
 
 Plot1 <- ggplot(data = caro, aes(x= E, y= N)) +
-  geom_sf(color = "orange") +
-  geom_path(color = "orange") + 
-  geom_sf(data = caro_3, color = "blue") +
-  geom_path(data = caro_3, color = "blue") +
+  geom_sf(aes(color = "N")) +
+  geom_path(aes(color = "N")) + 
+  geom_sf(data = caro_3, aes(color = "E")) +
+  geom_path(data = caro_3, aes(color = "E")) +
   coord_sf(datum = st_crs(2056)) +
-  scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
-  theme_bw() +
-  theme(panel.border = element_blank())
+  scale_x_continuous("E", 
+                     limits = c(1205030, 1205140), 
+                     breaks = seq(1205030, 1205140, by = 20)) +
+  scale_y_continuous("N", limits = c(2570480,2570640), breaks = seq(2570480,2570640, by = 40)) +
+  theme_light() +
+  labs(color = "Trajectory", 
+       title = "Comparing original- with 3 minutes-resample data") +
+  scale_color_manual(values = c("N" = "black", "E" = "orange"), 
+                     labels = c("3 minutes", "1 minute")) +
+  theme(panel.border = element_blank(),
+        title = element_text(vjust=2, size=15),
+        axis.title = element_text(vjust = 2, size = 15))
+
 
 Plot2 <- ggplot(data = caro, aes(x= E, y= N)) +
-  geom_sf(color = "orange") +
-  geom_path(color = "orange") + 
-  geom_sf(data = caro_6, color = "blue") +
-  geom_path(data = caro_6, color = "blue") +
+  geom_sf(aes(color = "N")) +
+  geom_path(aes(color = "N")) + 
+  geom_sf(data = caro_6, aes(color = "E")) +
+  geom_path(data = caro_6, aes(color = "E")) +
   coord_sf(datum = st_crs(2056)) +
-  scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
-  theme_bw() +
-  theme(panel.border = element_blank())
+  scale_x_continuous("E", 
+                     limits = c(1205030, 1205140), 
+                     breaks = seq(1205030, 1205140, by = 20)) +
+  scale_y_continuous("N", limits = c(2570480,2570640), breaks = seq(2570480,2570640, by = 40)) +
+  theme_light() +
+  labs(color = "Trajectory", 
+       title = "Comparing original- with 6 minutes-resample data") +
+  scale_color_manual(values = c("N" = "black", "E" = "orange"), 
+                     labels = c("6 minutes", "1 minute")) +
+  theme(panel.border = element_blank(),
+        title = element_text(vjust=2, size=15),
+        axis.title = element_text(vjust = 2, size = 15))
 
 Plot3 <- ggplot(data = caro, aes(x= E, y= N)) +
-  geom_sf(color = "orange") +
-  geom_path(color = "orange") + 
-  geom_sf(data = caro_9, color = "blue") +
-  geom_path(data = caro_9, color = "blue") +
+  geom_sf(aes(color = "N")) +
+  geom_path(aes(color = "N")) + 
+  geom_sf(data = caro_9, aes(color = "E")) +
+  geom_path(data = caro_9, aes(color = "E")) +
   coord_sf(datum = st_crs(2056)) +
-  scale_x_continuous("E", limits = c(1205050, 1205130), breaks = seq(1205050, 1205130, by = 20)) +
-  theme_bw() +
-  theme(panel.border = element_blank())
+  scale_x_continuous("E", 
+                     limits = c(1205030, 1205140), 
+                     breaks = seq(1205030, 1205140, by = 20)) +
+  scale_y_continuous("N", limits = c(2570480,2570640), breaks = seq(2570480,2570640, by = 40)) +
+  theme_light() +
+  labs(color = "Trajectory", 
+       title = "Comparing original- with 9 minutes-resample data") +
+  scale_color_manual(values = c("N" = "black", "E" = "orange"), 
+                     labels = c("9 minutes", "1 minute")) +
+  theme(panel.border = element_blank(),
+        title = element_text(vjust=2, size=15),
+        axis.title = element_text(vjust = 2, size = 15))
+
+
 
 # Task 4
 
