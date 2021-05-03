@@ -185,7 +185,6 @@ Plot3 <- ggplot(data = caro, aes(x= E, y= N)) +
         axis.title = element_text(vjust = 2, size = 15))
 
 
-
 # Task 4
 
 library(zoo)
